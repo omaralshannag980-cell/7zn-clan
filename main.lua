@@ -1,122 +1,280 @@
--- ط§ظ„ط³ظ„ط§ظ… ط¹ظ„ظٹظƒظ… ظ„ط§ طھظ†ط³ظ‰ ط³ظƒط±ط¨طھظƒ
+local player = game.Players.LocalPlayer
+local gui = script.Parent
 
--- 1. طھط­ظ…ظٹظ„ ظ…ظƒطھط¨ط© RedzLib V4
-local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/techwearhubofc/Redz/main/Source.lua"))()
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 450, 0, 500)
+mainFrame.Position = UDim2.new(0.5, -225, 0.5, -250)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = gui
 
--- 2. ط¥ظ†ط´ط§ط، ط§ظ„ظ†ط§ظپط°ط© ط§ظ„ط±ط¦ظٹط³ظٹط© ط¨ط§ظ„ظˆط§ط¬ظ‡ط© ط§ظ„ط¬ط¯ظٹط¯ط© ط§ظ„ظ…ط·ظ„ظˆط¨ط© (by: 7zn)
-local Window = redzlib:MakeWindow({
-  Title = "DEMOz HUB [ Beta ] : Brookhaven ًںڈ،RP",
-  SubTitle = "by : 7zn",
-  LoadText = "Demoz Hub Troll version",
-  Flags = "Demoz Hub | Example.lua"
-})
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 12)
+mainCorner.Parent = mainFrame
 
--- 3. ط¥ط¶ط§ظپط© ط²ط± ط§ظ„طھطµط؛ظٹط± ظ„ظ„ظˆط§ط¬ظ‡ط©
-Window:AddMinimizeButton({
-  Image = "rbxassetid://130688450838044",
-  UICorner = {true, CornerRadius = UDim.new(0.5, 0)},
-  UIStroke = {false, {}}
-})
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
 
--- طھظ†ط¨ظٹظ‡ طھط±ط­ظٹط¨ظٹ ط¹ظ†ط¯ ط§ظ„طھط´ط؛ظٹظ„
-redzlib:Notification("DEMOz HUB", "طھظ… طھط´ط؛ظٹظ„ ط§ظ„ط³ظƒط±ط¨طھ ط¨ظ†ط¬ط§ط­ ط¨ط§ظ„ظˆط§ط¬ظ‡ط© ط§ظ„ط¬ط¯ظٹط¯ط©!\nby: 7zn", "success", 5)
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Parent = titleBar
 
----------------------------------------------------------------------
--- [ ط§ظ„طھط±ظƒظٹط² ط¹ظ„ظ‰ ط¥ظ†ط´ط§ط، ط§ظ„طھط¨ظˆظٹط¨ط§طھ ظˆط§ظ„ظ€ Tabs ط¨ط§ظ„طµظٹط؛ط© ط§ظ„ظ…طھظˆط§ظپظ‚ط© ]
----------------------------------------------------------------------
-local SongsTab = Window:MakeTab({"Songs", "music"})
-local AntiTab = Window:MakeTab({"Anti", "shield"})
-local CreditsTab = Window:MakeTab({"Credits", "user"})
----------------------------------------------------------------------
--- [1] ظ†ط¸ط§ظ… ط§ظ„طµظˆطھظٹط§طھ ظˆط§ظ„ط£ط؛ط§ظ†ظٹ ط§ظ„ظ…ط­ط³ظ† (ط¯ط§ط®ظ„ SongsTab)
----------------------------------------------------------------------
-local LocalPlayer = game:GetService("Players").LocalPlayer
+local titleText = Instance.new("TextLabel")
+titleText.Size = UDim2.new(1, -50, 1, 0)
+titleText.Position = UDim2.new(0, 25, 0, 0)
+titleText.Text = "🔥 DEMOz HUB [Beta] : Brookhaven RP"
+titleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleText.BackgroundTransparency = 1
+titleText.TextSize = 18
+titleText.Font = Enum.Font.GothamBold
+titleText.TextXAlignment = Enum.TextXAlignment.Left
+titleText.Parent = titleBar
 
-local function playForEveryone(audioId)
-    local cleanId = tostring(audioId):match("%d+")
-    if not cleanId then
-        redzlib:Notification("طھظ†ط¨ظٹظ‡", "ط§ظ„ظ€ ID ط§ظ„ظ…ط¯ط®ظ„ ط؛ظٹط± طµط§ظ„ط­!", "error", 3)
-        return
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 35, 0, 35)
+closeBtn.Position = UDim2.new(1, -40, 0, 2)
+closeBtn.Text = "✖"
+closeBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+closeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+closeBtn.BorderSizePixel = 0
+closeBtn.Parent = titleBar
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeBtn
+
+closeBtn.MouseButton1Click:Connect(function()
+    gui.Enabled = false
+end)
+
+game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+    if not processed and input.KeyCode == Enum.KeyCode.K then
+        gui.Enabled = not gui.Enabled
     end
+end)
 
-    -- ظ…ط­ط§ظˆظ„ط© ط§ظ„ط¹ط«ظˆط± ط¹ظ„ظ‰ ط£ط¯ط§ط© ط§ظ„طµظˆطھ ظپظٹ ط§ظ„ط­ظ‚ظٹط¨ط© ط£ظˆ ط§ظ„ط´ط®طµظٹط©
-    local radio = LocalPlayer.Backpack:FindFirstChild("Radio") or LocalPlayer.Character:FindFirstChild("Radio") 
-               or LocalPlayer.Backpack:FindFirstChild("Boombox") or LocalPlayer.Character:FindFirstChild("Boombox") or LocalPlayer.Backpack:FindFirstChild("Music")
-    
-    if radio then
-        -- ط§ظ„ط¨ط­ط« ط¹ظ† ط§ظ„ط±ظٹظ…ظˆطھ ط§ظ„ظ…ط³ط¤ظˆظ„ ط¹ظ† ط§ظ„ط¨ط« ظ„ظ„ط¬ظ…ظٹط¹
-        local remote = radio:FindFirstChild("Remote") or radio:FindFirstChild("Server") or radio:FindFirstChildOfClass("RemoteEvent")
-        if remote and remote:IsA("RemoteEvent") then
-            remote:FireServer(cleanId)
-            redzlib:Notification("DEMOz HUB", "طھظ… طھط´ط؛ظٹظ„ ط§ظ„طµظˆطھ ط¹ط¨ط± ط§ظ„ط±ط§ط¯ظٹظˆ ظ„ظƒظٹ ظٹط³ظ…ط¹ظ‡ ط§ظ„ط¬ظ…ظٹط¹!", "success", 3)
-        else
-            -- ط§ظ„ط¨ط­ط« ط¹ظ† ط±ظٹظ…ظˆطھ Brookhaven ط§ظ„ط´ظ‡ظٹط± ظ„ظ„ظ…ظˆط³ظٹظ‚ظ‰
-            local bkrMusic = game:GetService("ReplicatedStorage"):FindFirstChild("MusicRemote") or game:GetService("ReplicatedStorage"):FindFirstChild("SoundEvent")
-            if bkrMusic and bkrMusic:IsA("RemoteEvent") then
-                bkrMusic:FireServer(cleanId)
-                redzlib:Notification("DEMOz HUB", "طھظ… طھط´ط؛ظٹظ„ ط§ظ„طµظˆطھ ظ„ظ„ط¬ظ…ظٹط¹ ط¹ط¨ط± ظ†ط¸ط§ظ… ط§ظ„ط®ط±ظٹط·ط©!", "success", 3)
-            else
-                redzlib:Notification("طھظ†ط¨ظٹظ‡", "طھظ… ط§ظ„ط¹ط«ظˆط± ط¹ظ„ظ‰ ط§ظ„ط£ط¯ط§ط© ظˆظ„ظƒظ† ظ„ظ… ظٹطھظ… ط§ظ„طھط¹ط±ظپ ط¹ظ„ظ‰ ظ†ط¸ط§ظ… ط§ظ„ط¨ط« ط§ظ„ط¹ط§ظ….", "warning", 3)
+local tabsFrame = Instance.new("Frame")
+tabsFrame.Size = UDim2.new(0, 100, 1, -40)
+tabsFrame.Position = UDim2.new(0, 0, 0, 40)
+tabsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+tabsFrame.BorderSizePixel = 0
+tabsFrame.Parent = mainFrame
+
+local contentFrame = Instance.new("Frame")
+contentFrame.Size = UDim2.new(1, -105, 1, -45)
+contentFrame.Position = UDim2.new(1, -345, 0, 45)
+contentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+contentFrame.BorderSizePixel = 0
+contentFrame.Parent = mainFrame
+
+local contentCorner = Instance.new("UICorner")
+contentCorner.CornerRadius = UDim.new(0, 8)
+contentCorner.Parent = contentFrame
+
+local currentTab = nil
+
+local function switchToTab(tabName)
+    for _, child in pairs(contentFrame:GetChildren()) do
+        if child:IsA("ScrollingFrame") then
+            child.Visible = false
+        end
+    end
+    local targetContent = contentFrame:FindFirstChild(tabName .. "Content")
+    if targetContent then
+        targetContent.Visible = true
+        currentTab = tabName
+    end
+end
+
+local function createTabButton(name, yPos)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.9, 0, 0, 45)
+    btn.Position = UDim2.new(0.05, 0, 0, yPos)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(220, 220, 220)
+    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+    btn.BorderSizePixel = 0
+    btn.Parent = tabsFrame
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = btn
+    btn.MouseButton1Click:Connect(function()
+        switchToTab(name)
+        for _, b in pairs(tabsFrame:GetChildren()) do
+            if b:IsA("TextButton") then
+                b.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
             end
         end
-    else
-        -- طھط´ط؛ظٹظ„ ظ…ط­ظ„ظٹ ظƒط®ظٹط§ط± ط§ط­طھظٹط§ط·ظٹ ط¥ط°ط§ ظ„ظ… ظٹظ…طھظ„ظƒ ط§ظ„ظ„ط§ط¹ط¨ ط±ط§ط¯ظٹظˆ
-        local localSound = game:GetService("Workspace"):FindFirstChild("TaxGGLocalSound")
-        if not localSound then
-            localSound = Instance.new("Sound", game:GetService("Workspace"))
-            localSound.Name = "TaxGGLocalSound"
-        end
-        localSound.SoundId = "rbxassetid://" .. cleanId
-        localSound.Volume = 2
-        localSound:Play()
-        redzlib:Notification("DEMOz HUB", "طھظ†ط¨ظٹظ‡: طھظ… ط§ظ„طھط´ط؛ظٹظ„ ظ…ط­ظ„ظٹط§ظ‹ (ط£ظ†طھ ظپظ‚ط· ظ…ظ† ظٹط³ظ…ط¹) ظ„ط¹ط¯ظ… طھظˆظپط± ط±ط§ط¯ظٹظˆ ط¨ظٹط¯ظƒ.", "warning", 4)
-    end
+        btn.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
+    end)
+    return btn
 end
 
-SongsTab:AddSection({"ط§ظ„طھط­ظƒظ… ط¨ط§ظ„طھط´ط؛ظٹظ„ (by 7zn)"})
+createTabButton("Songs & IDs", 10)
+createTabButton("Anti-AFK & Lag", 65)
+createTabButton("Credits", 120)
 
-local customTrackID = ""
-SongsTab:AddTextBox({"ط¶ط¹ ID ظ…ط®طµطµ ظ‡ظ†ط§", "", function(value)
-    customTrackID = value
-end})
+local songsContent = Instance.new("ScrollingFrame")
+songsContent.Name = "Songs & IDsContent"
+songsContent.Size = UDim2.new(1, -10, 1, -10)
+songsContent.Position = UDim2.new(0, 5, 0, 5)
+songsContent.BackgroundTransparency = 1
+songsContent.CanvasSize = UDim2.new(0, 0, 0, 800)
+songsContent.ScrollBarThickness = 6
+songsContent.Parent = contentFrame
+songsContent.Visible = false
 
-SongsTab:AddButton({"طھط´ط؛ظٹظ„ ط§ظ„ظ€ ID ط§ظ„ظٹط¯ظˆظٹ ًںŒگ", function()
-    if customTrackID ~= "" then
-        playForEveryone(customTrackID)
-    else
-        redzlib:Notification("طھظ†ط¨ظٹظ‡", "ط§ظ„ط±ط¬ط§ط، ظƒطھط§ط¨ط© ID ط£ظˆظ„ط§ظ‹", "error", 3)
+local yOffset = 5
+
+local section1 = Instance.new("TextLabel")
+section1.Size = UDim2.new(1, -10, 0, 30)
+section1.Position = UDim2.new(0, 5, 0, yOffset)
+section1.Text = "🎵 Music Control"
+section1.TextColor3 = Color3.fromRGB(255, 200, 100)
+section1.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+section1.TextSize = 16
+section1.Font = Enum.Font.GothamBold
+section1.Parent = songsContent
+
+local secCorner = Instance.new("UICorner")
+secCorner.CornerRadius = UDim.new(0, 4)
+secCorner.Parent = section1
+yOffset = yOffset + 40
+
+local idBox = Instance.new("TextBox")
+idBox.Size = UDim2.new(1, -10, 0, 35)
+idBox.Position = UDim2.new(0, 5, 0, yOffset)
+idBox.PlaceholderText = "Enter Audio ID..."
+idBox.Text = ""
+idBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+idBox.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+idBox.ClearTextOnFocus = false
+idBox.Parent = songsContent
+
+local boxCorner = Instance.new("UICorner")
+boxCorner.CornerRadius = UDim.new(0, 6)
+boxCorner.Parent = idBox
+yOffset = yOffset + 45
+
+local playBtn = Instance.new("TextButton")
+playBtn.Size = UDim2.new(1, -10, 0, 40)
+playBtn.Position = UDim2.new(0, 5, 0, yOffset)
+playBtn.Text = "▶ Play Custom ID"
+playBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+playBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 200)
+playBtn.BorderSizePixel = 0
+playBtn.Parent = songsContent
+
+local playCorner = Instance.new("UICorner")
+playCorner.CornerRadius = UDim.new(0, 6)
+playCorner.Parent = playBtn
+yOffset = yOffset + 50
+
+local function playAudio(audioId)
+    local cleanId = tostring(audioId):match("%d+")
+    if not cleanId then return end
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://" .. cleanId
+    sound.Volume = 1
+    sound.Parent = game:GetService("Workspace")
+    sound:Play()
+    task.wait(sound.TimeLength)
+    sound:Destroy()
+end
+
+playBtn.MouseButton1Click:Connect(function()
+    if idBox.Text ~= "" then
+        playAudio(idBox.Text)
     end
-end})
+end)
 
-SongsTab:AddSection({"ظ‚ط§ط¦ظ…ط© ط§ظ„ط£ظƒظˆط§ط¯ ط§ظ„ط®ط§طµط© ط¨ظƒ (طھط¨ط§ظ† ظ„ظ„ظ†ط§ط³)"})
+local section2 = Instance.new("TextLabel")
+section2.Size = UDim2.new(1, -10, 0, 30)
+section2.Position = UDim2.new(0, 5, 0, yOffset)
+section2.Text = "📀 Track List"
+section2.TextColor3 = Color3.fromRGB(255, 200, 100)
+section2.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+section2.TextSize = 16
+section2.Font = Enum.Font.GothamBold
+section2.Parent = songsContent
 
-local userTracks = {
-    "95877137552489", "125861618879629", "134693931986753", "107273226047360", 
-    "124123680327164", "73721014572224", "87920916682123", "126581313655066", 
-    "12412368037164", "79193631928944", "85822106162452", "7984027399", 
-    "129963257934687", "93297302504653", "98313375960954", "3230475415", 
-    "71701207559451", "106330590409106", "71373562243752", "127666185347295", 
-    "9108676586"
+local sec2Corner = Instance.new("UICorner")
+sec2Corner.CornerRadius = UDim.new(0, 4)
+sec2Corner.Parent = section2
+yOffset = yOffset + 40
+
+local tracks = {
+    "95877137552489", "125861618879629", "134693931986753", "107273226047360",
+    "124123680327164", "73721014572224", "87920916682123", "126581313655066",
+    "79193631928944", "85822106162452", "7984027399", "129963257934687",
+    "93297302504653", "98313375960954", "3230475415", "71701207559451",
+    "106330590409106", "71373562243752", "127666185347295", "9108676586"
 }
 
-for index, id in ipairs(userTracks) do
-    SongsTab:AddButton({"ًںژµ طھط´ط؛ظٹظ„ ط§ظ„ظƒظˆط¯ ط±ظ‚ظ… [" .. tostring(index) .. "]", function()
-        playForEveryone(id)
-    end})
+for i, id in ipairs(tracks) do
+    local trackBtn = Instance.new("TextButton")
+    trackBtn.Size = UDim2.new(1, -10, 0, 35)
+    trackBtn.Position = UDim2.new(0, 5, 0, yOffset)
+    trackBtn.Text = "Track " .. tostring(i)
+    trackBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
+    trackBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+    trackBtn.BorderSizePixel = 0
+    trackBtn.Parent = songsContent
+    local trackCorner = Instance.new("UICorner")
+    trackCorner.CornerRadius = UDim.new(0, 6)
+    trackCorner.Parent = trackBtn
+    trackBtn.MouseButton1Click:Connect(function()
+        playAudio(id)
+    end)
+    yOffset = yOffset + 42
 end
 
----------------------------------------------------------------------
--- [2] ظ‚ط³ظ… ط§ظ„ظ…ط¶ط§ط¯ط§طھ ظˆط§ظ„ظ€ Anti (ط¯ط§ط®ظ„ AntiTab)
----------------------------------------------------------------------
-AntiTab:AddSection({"ط­ظ…ط§ظٹط© ط§ظ„ظ„ط§ط¹ط¨ (Anti-AFK)"})
+songsContent.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
+
+local antiContent = Instance.new("ScrollingFrame")
+antiContent.Name = "Anti-AFK & LagContent"
+antiContent.Size = UDim2.new(1, -10, 1, -10)
+antiContent.Position = UDim2.new(0, 5, 0, 5)
+antiContent.BackgroundTransparency = 1
+antiContent.CanvasSize = UDim2.new(0, 0, 0, 400)
+antiContent.ScrollBarThickness = 6
+antiContent.Parent = contentFrame
+antiContent.Visible = false
+
+local yOffset2 = 5
+
+local antiSection = Instance.new("TextLabel")
+antiSection.Size = UDim2.new(1, -10, 0, 30)
+antiSection.Position = UDim2.new(0, 5, 0, yOffset2)
+antiSection.Text = "🛡️ Anti-AFK"
+antiSection.TextColor3 = Color3.fromRGB(255, 200, 100)
+antiSection.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+antiSection.TextSize = 16
+antiSection.Font = Enum.Font.GothamBold
+antiSection.Parent = antiContent
+
+local antiSecCorner = Instance.new("UICorner")
+antiSecCorner.CornerRadius = UDim.new(0, 4)
+antiSecCorner.Parent = antiSection
+yOffset2 = yOffset2 + 40
 
 local antiAFKEnabled = false
-AntiTab:AddToggle({"طھظپط¹ظٹظ„ ظ…ط¶ط§ط¯ ط§ظ„ط·ط±ط¯ ط§ظ„ط®ط§ظ…ظ„", false, function(state)
-    antiAFKEnabled = state
-    if antiAFKEnabled then
-        redzlib:Notification("DEMOz HUB", "ظ…ط¶ط§ط¯ ط§ظ„ط·ط±ط¯ ظٹط¹ظ…ظ„ ط§ظ„ط¢ظ† ط¨ظ†ط¬ط§ط­!", "success", 3)
-    end
-end})
+local antiAFKBtn = Instance.new("TextButton")
+antiAFKBtn.Size = UDim2.new(1, -10, 0, 40)
+antiAFKBtn.Position = UDim2.new(0, 5, 0, yOffset2)
+antiAFKBtn.Text = "Enable Anti-AFK"
+antiAFKBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+antiAFKBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 100)
+antiAFKBtn.BorderSizePixel = 0
+antiAFKBtn.Parent = antiContent
+
+local antiBtnCorner = Instance.new("UICorner")
+antiBtnCorner.CornerRadius = UDim.new(0, 6)
+antiBtnCorner.Parent = antiAFKBtn
+yOffset2 = yOffset2 + 50
 
 local VirtualUser = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:Connect(function()
@@ -126,26 +284,71 @@ game:GetService("Players").LocalPlayer.Idled:Connect(function()
     end
 end)
 
-AntiTab:AddSection({"طھط®ظپظٹظپ ط§ظ„ظ„ط§ظ‚ ظˆط²ظٹط§ط¯ط© ط§ظ„ظپط±ظٹظ…ط§طھ (Anti-Lag)"})
+antiAFKBtn.MouseButton1Click:Connect(function()
+    antiAFKEnabled = not antiAFKEnabled
+    if antiAFKEnabled then
+        antiAFKBtn.Text = "Disable Anti-AFK"
+        antiAFKBtn.BackgroundColor3 = Color3.fromRGB(200, 70, 70)
+    else
+        antiAFKBtn.Text = "Enable Anti-AFK"
+        antiAFKBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 100)
+    end
+end)
 
-AntiTab:AddButton({"طھظ†ط¸ظٹظپ ط§ظ„ط®ط±ظٹط·ط© (ط¥ط²ط§ظ„ط© ط§ظ„طھط£ط«ظٹط±ط§طھ ط§ظ„ظ…ط³ط¨ط¨ط© ظ„ظ„ظ„ط§ظ‚)", function()
-    local cleared = 0
-    local targets = {game:GetService("Workspace"), game:GetService("Lighting")}
-    for _, service in pairs(targets) do
-        for _, obj in pairs(service:GetDescendants()) do
-            if obj:IsA("ParticleEmitter") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
-                obj.Enabled = false
-                cleared = cleared + 1
-            elseif obj:IsA("PostEffect") then
-                obj.Enabled = false
-                cleared = cleared + 1
-            end
+local lagSection = Instance.new("TextLabel")
+lagSection.Size = UDim2.new(1, -10, 0, 30)
+lagSection.Position = UDim2.new(0, 5, 0, yOffset2)
+lagSection.Text = "⚡ Anti-Lag"
+lagSection.TextColor3 = Color3.fromRGB(255, 200, 100)
+lagSection.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+lagSection.TextSize = 16
+lagSection.Font = Enum.Font.GothamBold
+lagSection.Parent = antiContent
+
+local lagSecCorner = Instance.new("UICorner")
+lagSecCorner.CornerRadius = UDim.new(0, 4)
+lagSecCorner.Parent = lagSection
+yOffset2 = yOffset2 + 40
+
+local cleanBtn = Instance.new("TextButton")
+cleanBtn.Size = UDim2.new(1, -10, 0, 40)
+cleanBtn.Position = UDim2.new(0, 5, 0, yOffset2)
+cleanBtn.Text = "Clean Effects"
+cleanBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+cleanBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 200)
+cleanBtn.BorderSizePixel = 0
+cleanBtn.Parent = antiContent
+
+local cleanCorner = Instance.new("UICorner")
+cleanCorner.CornerRadius = UDim.new(0, 6)
+cleanCorner.Parent = cleanBtn
+yOffset2 = yOffset2 + 50
+
+cleanBtn.MouseButton1Click:Connect(function()
+    for _, obj in pairs(game:GetService("Workspace"):GetDescendants()) do
+        if obj:IsA("ParticleEmitter") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+            obj.Enabled = false
+        elseif obj:IsA("Decal") then
+            obj:Destroy()
         end
     end
-    redzlib:Notification("DEMOz HUB", "طھظ… طھظ†ط¸ظٹظپ " .. tostring(cleared) .. " طھط£ط«ظٹط± ظ„ط§ظ‚ ط¨ظ†ط¬ط§ط­!", "success", 4)
-end})
+end)
 
-AntiTab:AddButton({"ظ†ظ…ط· ط§ظ„ط¨ط·ط§ط·ط³ (ط£ط¹ظ„ظ‰ ظپط±ظٹظ…ط§طھ ظ…ظ…ظƒظ†ط© ظ„ظ„ط¬ظ…ظٹط¹)", function()
+local potatoBtn = Instance.new("TextButton")
+potatoBtn.Size = UDim2.new(1, -10, 0, 40)
+potatoBtn.Position = UDim2.new(0, 5, 0, yOffset2)
+potatoBtn.Text = "Potato Mode"
+potatoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+potatoBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 50)
+potatoBtn.BorderSizePixel = 0
+potatoBtn.Parent = antiContent
+
+local potatoCorner = Instance.new("UICorner")
+potatoCorner.CornerRadius = UDim.new(0, 6)
+potatoCorner.Parent = potatoBtn
+yOffset2 = yOffset2 + 50
+
+potatoBtn.MouseButton1Click:Connect(function()
     for _, v in pairs(game:GetService("Workspace"):GetDescendants()) do
         if v:IsA("MeshPart") then
             v.TextureID = ""
@@ -153,25 +356,82 @@ AntiTab:AddButton({"ظ†ظ…ط· ط§ظ„ط¨ط·ط§ط·ط³ (ط£ط¹ظ„�
             v:Destroy()
         end
     end
-    redzlib:Notification("DEMOz HUB", "طھظ… طھظپط¹ظٹظ„ ظ†ظ…ط· ط§ظ„ظپط±ظٹظ…ط§طھ ط§ظ„ط¹ط§ظ„ظٹط© ظˆط§ظ„ظ…ط¸ظ‡ط± ط§ظ„ظ…ط¨ط³ط·!", "success", 4)
-end})
+end)
 
----------------------------------------------------------------------
--- [3] طھط¨ظˆظٹط¨ ط§ظ„ط­ظ‚ظˆظ‚ ظˆط§ظ„ظ…ط·ظˆط± (ط¯ط§ط®ظ„ CreditsTab)
----------------------------------------------------------------------
-CreditsTab:AddSection({"ظ…ط¹ظ„ظˆظ…ط§طھ ط§ظ„ط³ظƒط±ط¨طھ"})
+antiContent.CanvasSize = UDim2.new(0, 0, 0, yOffset2 + 20)
 
-CreditsTab:AddButton({"ط§ط³ظ… ط§ظ„ط³ظƒط±ط¨طھ: DEMOz HUB", function() end})
-CreditsTab:AddButton({"ط§ظ„ظ…ط·ظˆط± ط§ظ„ط±ط¦ظٹط³ظٹ: 7zn", function() end})
+local creditsContent = Instance.new("ScrollingFrame")
+creditsContent.Name = "CreditsContent"
+creditsContent.Size = UDim2.new(1, -10, 1, -10)
+creditsContent.Position = UDim2.new(0, 5, 0, 5)
+creditsContent.BackgroundTransparency = 1
+creditsContent.CanvasSize = UDim2.new(0, 0, 0, 250)
+creditsContent.ScrollBarThickness = 6
+creditsContent.Parent = contentFrame
+creditsContent.Visible = false
 
-CreditsTab:AddSection({"ط§ظ„طھظˆط§طµظ„ ظˆط§ظ„ط¯ط¹ظ…"})
+local yOffset3 = 5
 
-CreditsTab:AddButton({"ط­ط³ط§ط¨ ط§ظ„طھظٹظƒ طھظˆظƒ: 9z_e.1", function() 
+local creditTitle = Instance.new("TextLabel")
+creditTitle.Size = UDim2.new(1, -10, 0, 40)
+creditTitle.Position = UDim2.new(0, 5, 0, yOffset3)
+creditTitle.Text = "📜 Information"
+creditTitle.TextColor3 = Color3.fromRGB(255, 200, 100)
+creditTitle.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+creditTitle.TextSize = 16
+creditTitle.Font = Enum.Font.GothamBold
+creditTitle.Parent = creditsContent
+
+local creditCorner = Instance.new("UICorner")
+creditCorner.CornerRadius = UDim.new(0, 4)
+creditCorner.Parent = creditTitle
+yOffset3 = yOffset3 + 50
+
+local scriptLabel = Instance.new("TextLabel")
+scriptLabel.Size = UDim2.new(1, -10, 0, 35)
+scriptLabel.Position = UDim2.new(0, 5, 0, yOffset3)
+scriptLabel.Text = "Script: DEMOz HUB"
+scriptLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+scriptLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+scriptLabel.TextSize = 14
+scriptLabel.Parent = creditsContent
+
+local scriptCorner = Instance.new("UICorner")
+scriptCorner.CornerRadius = UDim.new(0, 6)
+scriptCorner.Parent = scriptLabel
+yOffset3 = yOffset3 + 42
+
+local devLabel = Instance.new("TextLabel")
+devLabel.Size = UDim2.new(1, -10, 0, 35)
+devLabel.Position = UDim2.new(0, 5, 0, yOffset3)
+devLabel.Text = "Developer: 7zn"
+devLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+devLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+devLabel.TextSize = 14
+devLabel.Parent = creditsContent
+
+local devCorner = Instance.new("UICorner")
+devCorner.CornerRadius = UDim.new(0, 6)
+devCorner.Parent = devLabel
+yOffset3 = yOffset3 + 42
+
+local tiktokBtn = Instance.new("TextButton")
+tiktokBtn.Size = UDim2.new(1, -10, 0, 40)
+tiktokBtn.Position = UDim2.new(0, 5, 0, yOffset3)
+tiktokBtn.Text = "TikTok: 9z_e.1 (Click to Copy)"
+tiktokBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+tiktokBtn.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
+tiktokBtn.BorderSizePixel = 0
+tiktokBtn.Parent = creditsContent
+
+local tiktokCorner = Instance.new("UICorner")
+tiktokCorner.CornerRadius = UDim.new(0, 6)
+tiktokCorner.Parent = tiktokBtn
+
+tiktokBtn.MouseButton1Click:Connect(function()
     setclipboard("9z_e.1")
-    redzlib:Notification("DEMOz HUB", "طھظ… ظ†ط³ط® ط­ط³ط§ط¨ ط§ظ„طھظٹظƒ طھظˆظƒ 9z_e.1 ط¥ظ„ظ‰ ط§ظ„ط­ط§ظپط¸ط©!", "success", 3)
-end})
+end)
 
----------------------------------------------------------------------
--- [4] ط­ظ„ ظ…ط´ظƒظ„ط© ط§ظ„ط§ط®طھظپط§ط،: ظپطھط­ ط§ظ„طھط¨ظˆظٹط¨ ط§ظ„ط£ظˆظ„ طھظ„ظ‚ط§ط¦ظٹط§ظ‹ ط¹ظ†ط¯ ط§ظ„طھط´ط؛ظٹظ„
----------------------------------------------------------------------
-Window:SelectTab(SongsTab)
+creditsContent.CanvasSize = UDim2.new(0, 0, 0, yOffset3 + 60)
+
+switchToTab("Songs & IDs")
