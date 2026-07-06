@@ -1,437 +1,299 @@
-local player = game.Players.LocalPlayer
-local gui = script.Parent
+-- // سكربت ترفكسا - النسخة المتكاملة \\ --
+-- // يحتوي على: البانج + المضادات + سكربت المطور \\ --
 
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 450, 0, 500)
-mainFrame.Position = UDim2.new(0.5, -225, 0.5, -250)
-mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-mainFrame.BorderSizePixel = 0
-mainFrame.Parent = gui
+-- =====================================================
+-- [1] الخدمات الأساسية
+-- =====================================================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local plr = Players.LocalPlayer
 
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 12)
-mainCorner.Parent = mainFrame
+-- إنشاء الواجهة الرئيسية
+local gui = Instance.new("ScreenGui")
+gui.Name = "Tarfxa_Menu"
+gui.Parent = plr.PlayerGui
 
-local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 40)
-titleBar.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
-titleBar.BorderSizePixel = 0
-titleBar.Parent = mainFrame
+-- =====================================================
+-- [2] الإطار الرئيسي (باسم ترفكسا)
+-- =====================================================
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 420, 0, 320)
+frame.Position = UDim2.new(0.5, -210, 0.5, -160)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+frame.BorderSizePixel = 2
+frame.BorderColor3 = Color3.fromRGB(200, 50, 50) -- لمسة حمراء باسم ترفكسا
+frame.BackgroundTransparency = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
 
-local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0, 12)
-titleCorner.Parent = titleBar
+-- العنوان العلوي (اسمك)
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0, 420, 0, 35)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(40, 10, 10)
+title.BorderSizePixel = 0
+title.Text = "🔥 ترفكسا | لوحة التحكم"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 20
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
 
-local titleText = Instance.new("TextLabel")
-titleText.Size = UDim2.new(1, -50, 1, 0)
-titleText.Position = UDim2.new(0, 25, 0, 0)
-titleText.Text = "🔥 DEMOz HUB [Beta] : Brookhaven RP"
-titleText.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleText.BackgroundTransparency = 1
-titleText.TextSize = 18
-titleText.Font = Enum.Font.GothamBold
-titleText.TextXAlignment = Enum.TextXAlignment.Left
-titleText.Parent = titleBar
+-- =====================================================
+-- [3] إنشاء علامات التبويب (Tabs) الثلاثة
+-- =====================================================
+local tabButtons = {}
+local tabContents = {}
 
-local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 35, 0, 35)
-closeBtn.Position = UDim2.new(1, -40, 0, 2)
-closeBtn.Text = "✖"
-closeBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
-closeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-closeBtn.BorderSizePixel = 0
-closeBtn.Parent = titleBar
-
-local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 8)
-closeCorner.Parent = closeBtn
-
-closeBtn.MouseButton1Click:Connect(function()
-    gui.Enabled = false
-end)
-
-game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
-    if not processed and input.KeyCode == Enum.KeyCode.K then
-        gui.Enabled = not gui.Enabled
-    end
-end)
-
-local tabsFrame = Instance.new("Frame")
-tabsFrame.Size = UDim2.new(0, 100, 1, -40)
-tabsFrame.Position = UDim2.new(0, 0, 0, 40)
-tabsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-tabsFrame.BorderSizePixel = 0
-tabsFrame.Parent = mainFrame
-
-local contentFrame = Instance.new("Frame")
-contentFrame.Size = UDim2.new(1, -105, 1, -45)
-contentFrame.Position = UDim2.new(1, -345, 0, 45)
-contentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-contentFrame.BorderSizePixel = 0
-contentFrame.Parent = mainFrame
-
-local contentCorner = Instance.new("UICorner")
-contentCorner.CornerRadius = UDim.new(0, 8)
-contentCorner.Parent = contentFrame
-
-local currentTab = nil
-
-local function switchToTab(tabName)
-    for _, child in pairs(contentFrame:GetChildren()) do
-        if child:IsA("ScrollingFrame") then
-            child.Visible = false
-        end
-    end
-    local targetContent = contentFrame:FindFirstChild(tabName .. "Content")
-    if targetContent then
-        targetContent.Visible = true
-        currentTab = tabName
-    end
-end
-
-local function createTabButton(name, yPos)
+local function createTab(name, index)
+    -- زر التبويب
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.9, 0, 0, 45)
-    btn.Position = UDim2.new(0.05, 0, 0, yPos)
+    btn.Size = UDim2.new(0, 120, 0, 30)
+    btn.Position = UDim2.new(0, (index - 1) * 135 + 10, 0, 40)
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    btn.BorderSizePixel = 1
+    btn.BorderColor3 = Color3.fromRGB(200, 200, 200)
     btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(220, 220, 220)
-    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
-    btn.BorderSizePixel = 0
-    btn.Parent = tabsFrame
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
-    btnCorner.Parent = btn
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 14
+    btn.Font = Enum.Font.GothamBold
+    btn.Parent = frame
+    table.insert(tabButtons, btn)
+
+    -- محتوى التبويب
+    local content = Instance.new("Frame")
+    content.Size = UDim2.new(0, 400, 0, 225)
+    content.Position = UDim2.new(0, 10, 0, 80)
+    content.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    content.BorderSizePixel = 1
+    content.BorderColor3 = Color3.fromRGB(100, 100, 100)
+    content.Visible = (index == 1)
+    content.Parent = frame
+    table.insert(tabContents, content)
+
+    -- تبديل التبويب عند الضغط
     btn.MouseButton1Click:Connect(function()
-        switchToTab(name)
-        for _, b in pairs(tabsFrame:GetChildren()) do
-            if b:IsA("TextButton") then
-                b.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
-            end
+        for i, tab in ipairs(tabContents) do
+            tab.Visible = (i == index)
         end
-        btn.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
+        for i, b in ipairs(tabButtons) do
+            b.BackgroundColor3 = (i == index) and Color3.fromRGB(180, 30, 30) or Color3.fromRGB(50, 50, 60)
+        end
     end)
-    return btn
 end
 
-createTabButton("Songs & IDs", 10)
-createTabButton("Anti-AFK & Lag", 65)
-createTabButton("Credits", 120)
+-- إنشاء 3 تبويبات باسم ترفكسا
+createTab("📡 البانج", 1)
+createTab("🛡️ المضادات", 2)
+createTab("👨‍💻 ترفكسا", 3) -- التبويب الثالث باسمك
 
-local songsContent = Instance.new("ScrollingFrame")
-songsContent.Name = "Songs & IDsContent"
-songsContent.Size = UDim2.new(1, -10, 1, -10)
-songsContent.Position = UDim2.new(0, 5, 0, 5)
-songsContent.BackgroundTransparency = 1
-songsContent.CanvasSize = UDim2.new(0, 0, 0, 800)
-songsContent.ScrollBarThickness = 6
-songsContent.Parent = contentFrame
-songsContent.Visible = false
+-- =====================================================
+-- [4] التبويب الأول: البانج (Ping + بانج خلفي)
+-- =====================================================
+local tab1 = tabContents[1]
 
-local yOffset = 5
+-- عرض الـ Ping
+local pingLabel = Instance.new("TextLabel")
+pingLabel.Size = UDim2.new(0, 350, 0, 30)
+pingLabel.Position = UDim2.new(0, 15, 0, 10)
+pingLabel.BackgroundTransparency = 1
+pingLabel.Text = "🌐 Ping: -- مللي"
+pingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+pingLabel.TextSize = 16
+pingLabel.Font = Enum.Font.GothamBold
+pingLabel.TextXAlignment = Enum.TextXAlignment.Left
+pingLabel.Parent = tab1
 
-local section1 = Instance.new("TextLabel")
-section1.Size = UDim2.new(1, -10, 0, 30)
-section1.Position = UDim2.new(0, 5, 0, yOffset)
-section1.Text = "🎵 Music Control"
-section1.TextColor3 = Color3.fromRGB(255, 200, 100)
-section1.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-section1.TextSize = 16
-section1.Font = Enum.Font.GothamBold
-section1.Parent = songsContent
+-- زر "بانج خلفي"
+local bangBtn = Instance.new("TextButton")
+bangBtn.Size = UDim2.new(0, 160, 0, 40)
+bangBtn.Position = UDim2.new(0, 15, 0, 50)
+bangBtn.BackgroundColor3 = Color3.fromRGB(200, 40, 40)
+bangBtn.BorderSizePixel = 2
+bangBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+bangBtn.Text = "💥 بانج خلفي"
+bangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+bangBtn.TextSize = 16
+bangBtn.Font = Enum.Font.GothamBold
+bangBtn.Parent = tab1
 
-local secCorner = Instance.new("UICorner")
-secCorner.CornerRadius = UDim.new(0, 4)
-secCorner.Parent = section1
-yOffset = yOffset + 40
-
-local idBox = Instance.new("TextBox")
-idBox.Size = UDim2.new(1, -10, 0, 35)
-idBox.Position = UDim2.new(0, 5, 0, yOffset)
-idBox.PlaceholderText = "Enter Audio ID..."
-idBox.Text = ""
-idBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-idBox.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-idBox.ClearTextOnFocus = false
-idBox.Parent = songsContent
-
-local boxCorner = Instance.new("UICorner")
-boxCorner.CornerRadius = UDim.new(0, 6)
-boxCorner.Parent = idBox
-yOffset = yOffset + 45
-
-local playBtn = Instance.new("TextButton")
-playBtn.Size = UDim2.new(1, -10, 0, 40)
-playBtn.Position = UDim2.new(0, 5, 0, yOffset)
-playBtn.Text = "▶ Play Custom ID"
-playBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-playBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 200)
-playBtn.BorderSizePixel = 0
-playBtn.Parent = songsContent
-
-local playCorner = Instance.new("UICorner")
-playCorner.CornerRadius = UDim.new(0, 6)
-playCorner.Parent = playBtn
-yOffset = yOffset + 50
-
-local function playAudio(audioId)
-    local cleanId = tostring(audioId):match("%d+")
-    if not cleanId then return end
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://" .. cleanId
-    sound.Volume = 1
-    sound.Parent = game:GetService("Workspace")
-    sound:Play()
-    task.wait(sound.TimeLength)
-    sound:Destroy()
-end
-
-playBtn.MouseButton1Click:Connect(function()
-    if idBox.Text ~= "" then
-        playAudio(idBox.Text)
+bangBtn.MouseButton1Click:Connect(function()
+    -- محاولة إيجاد Remote لإرسال البانج
+    local remote = game:GetService("ReplicatedStorage"):FindFirstChild("BangEvent") 
+                 or game:GetService("ReplicatedStorage"):FindFirstChild("RemoteEvent")
+    if remote then
+        pcall(function()
+            remote:FireServer("Bang")
+            bangBtn.Text = "✅ تم الإرسال"
+            task.wait(1)
+            bangBtn.Text = "💥 بانج خلفي"
+        end)
+    else
+        bangBtn.Text = "❌ لا يوجد Remote"
+        task.wait(1.5)
+        bangBtn.Text = "💥 بانج خلفي"
     end
 end)
 
-local section2 = Instance.new("TextLabel")
-section2.Size = UDim2.new(1, -10, 0, 30)
-section2.Position = UDim2.new(0, 5, 0, yOffset)
-section2.Text = "📀 Track List"
-section2.TextColor3 = Color3.fromRGB(255, 200, 100)
-section2.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-section2.TextSize = 16
-section2.Font = Enum.Font.GothamBold
-section2.Parent = songsContent
+-- تحديث الـ Ping تلقائياً
+task.spawn(function()
+    while gui.Parent do
+        task.wait(2)
+        local stats = game:GetService("Stats")
+        local ping = stats:FindFirstChild("Data") and stats.Data:FindFirstChild("Ping")
+        if ping then
+            pingLabel.Text = "🌐 Ping: " .. math.floor(ping.Value * 1000) .. " مللي"
+        else
+            pingLabel.Text = "🌐 Ping: -- مللي"
+        end
+    end
+end)
 
-local sec2Corner = Instance.new("UICorner")
-sec2Corner.CornerRadius = UDim.new(0, 4)
-sec2Corner.Parent = section2
-yOffset = yOffset + 40
+-- =====================================================
+-- [5] التبويب الثاني: جميع أنواع المضادات
+-- =====================================================
+local tab2 = tabContents[2]
 
-local tracks = {
-    "95877137552489", "125861618879629", "134693931986753", "107273226047360",
-    "124123680327164", "73721014572224", "87920916682123", "126581313655066",
-    "79193631928944", "85822106162452", "7984027399", "129963257934687",
-    "93297302504653", "98313375960954", "3230475415", "71701207559451",
-    "106330590409106", "71373562243752", "127666185347295", "9108676586"
+-- قائمة المضادات
+local antiList = {
+    {name = "🛡️ مضاد AFK", key = "afk"},
+    {name = "🧊 مضاد التجميد", key = "freeze"},
+    {name = "🚫 مضاد الطرد", key = "kick"},
+    {name = "⚡ مضاد التعليق", key = "lag"}
 }
 
-for i, id in ipairs(tracks) do
-    local trackBtn = Instance.new("TextButton")
-    trackBtn.Size = UDim2.new(1, -10, 0, 35)
-    trackBtn.Position = UDim2.new(0, 5, 0, yOffset)
-    trackBtn.Text = "Track " .. tostring(i)
-    trackBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
-    trackBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
-    trackBtn.BorderSizePixel = 0
-    trackBtn.Parent = songsContent
-    local trackCorner = Instance.new("UICorner")
-    trackCorner.CornerRadius = UDim.new(0, 6)
-    trackCorner.Parent = trackBtn
-    trackBtn.MouseButton1Click:Connect(function()
-        playAudio(id)
+local antiStates = {}
+local yPos = 10
+
+for i, item in ipairs(antiList) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 170, 0, 35)
+    btn.Position = UDim2.new(0, 15 + ((i-1) % 2) * 190, 0, yPos + math.floor((i-1) / 2) * 50)
+    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    btn.BorderSizePixel = 1
+    btn.BorderColor3 = Color3.fromRGB(200, 200, 200)
+    btn.Text = item.name .. ": OFF"
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 14
+    btn.Font = Enum.Font.GothamBold
+    btn.Parent = tab2
+    
+    antiStates[item.key] = false
+    
+    btn.MouseButton1Click:Connect(function()
+        antiStates[item.key] = not antiStates[item.key]
+        if antiStates[item.key] then
+            btn.Text = item.name .. ": ✅ ON"
+            btn.BackgroundColor3 = Color3.fromRGB(30, 120, 30)
+        else
+            btn.Text = item.name .. ": ❌ OFF"
+            btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+        end
     end)
-    yOffset = yOffset + 42
 end
 
-songsContent.CanvasSize = UDim2.new(0, 0, 0, yOffset + 20)
-
-local antiContent = Instance.new("ScrollingFrame")
-antiContent.Name = "Anti-AFK & LagContent"
-antiContent.Size = UDim2.new(1, -10, 1, -10)
-antiContent.Position = UDim2.new(0, 5, 0, 5)
-antiContent.BackgroundTransparency = 1
-antiContent.CanvasSize = UDim2.new(0, 0, 0, 400)
-antiContent.ScrollBarThickness = 6
-antiContent.Parent = contentFrame
-antiContent.Visible = false
-
-local yOffset2 = 5
-
-local antiSection = Instance.new("TextLabel")
-antiSection.Size = UDim2.new(1, -10, 0, 30)
-antiSection.Position = UDim2.new(0, 5, 0, yOffset2)
-antiSection.Text = "🛡️ Anti-AFK"
-antiSection.TextColor3 = Color3.fromRGB(255, 200, 100)
-antiSection.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-antiSection.TextSize = 16
-antiSection.Font = Enum.Font.GothamBold
-antiSection.Parent = antiContent
-
-local antiSecCorner = Instance.new("UICorner")
-antiSecCorner.CornerRadius = UDim.new(0, 4)
-antiSecCorner.Parent = antiSection
-yOffset2 = yOffset2 + 40
-
-local antiAFKEnabled = false
-local antiAFKBtn = Instance.new("TextButton")
-antiAFKBtn.Size = UDim2.new(1, -10, 0, 40)
-antiAFKBtn.Position = UDim2.new(0, 5, 0, yOffset2)
-antiAFKBtn.Text = "Enable Anti-AFK"
-antiAFKBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-antiAFKBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 100)
-antiAFKBtn.BorderSizePixel = 0
-antiAFKBtn.Parent = antiContent
-
-local antiBtnCorner = Instance.new("UICorner")
-antiBtnCorner.CornerRadius = UDim.new(0, 6)
-antiBtnCorner.Parent = antiAFKBtn
-yOffset2 = yOffset2 + 50
-
-local VirtualUser = game:GetService("VirtualUser")
-game:GetService("Players").LocalPlayer.Idled:Connect(function()
-    if antiAFKEnabled then
-        VirtualUser:CaptureController()
-        VirtualUser:ClickButton2(Vector2.new())
-    end
-end)
-
-antiAFKBtn.MouseButton1Click:Connect(function()
-    antiAFKEnabled = not antiAFKEnabled
-    if antiAFKEnabled then
-        antiAFKBtn.Text = "Disable Anti-AFK"
-        antiAFKBtn.BackgroundColor3 = Color3.fromRGB(200, 70, 70)
-    else
-        antiAFKBtn.Text = "Enable Anti-AFK"
-        antiAFKBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 100)
-    end
-end)
-
-local lagSection = Instance.new("TextLabel")
-lagSection.Size = UDim2.new(1, -10, 0, 30)
-lagSection.Position = UDim2.new(0, 5, 0, yOffset2)
-lagSection.Text = "⚡ Anti-Lag"
-lagSection.TextColor3 = Color3.fromRGB(255, 200, 100)
-lagSection.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-lagSection.TextSize = 16
-lagSection.Font = Enum.Font.GothamBold
-lagSection.Parent = antiContent
-
-local lagSecCorner = Instance.new("UICorner")
-lagSecCorner.CornerRadius = UDim.new(0, 4)
-lagSecCorner.Parent = lagSection
-yOffset2 = yOffset2 + 40
-
-local cleanBtn = Instance.new("TextButton")
-cleanBtn.Size = UDim2.new(1, -10, 0, 40)
-cleanBtn.Position = UDim2.new(0, 5, 0, yOffset2)
-cleanBtn.Text = "Clean Effects"
-cleanBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-cleanBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 200)
-cleanBtn.BorderSizePixel = 0
-cleanBtn.Parent = antiContent
-
-local cleanCorner = Instance.new("UICorner")
-cleanCorner.CornerRadius = UDim.new(0, 6)
-cleanCorner.Parent = cleanBtn
-yOffset2 = yOffset2 + 50
-
-cleanBtn.MouseButton1Click:Connect(function()
-    for _, obj in pairs(game:GetService("Workspace"):GetDescendants()) do
-        if obj:IsA("ParticleEmitter") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
-            obj.Enabled = false
-        elseif obj:IsA("Decal") then
-            obj:Destroy()
-        end
-    end
-end)
-
-local potatoBtn = Instance.new("TextButton")
-potatoBtn.Size = UDim2.new(1, -10, 0, 40)
-potatoBtn.Position = UDim2.new(0, 5, 0, yOffset2)
-potatoBtn.Text = "Potato Mode"
-potatoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-potatoBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 50)
-potatoBtn.BorderSizePixel = 0
-potatoBtn.Parent = antiContent
-
-local potatoCorner = Instance.new("UICorner")
-potatoCorner.CornerRadius = UDim.new(0, 6)
-potatoCorner.Parent = potatoBtn
-yOffset2 = yOffset2 + 50
-
-potatoBtn.MouseButton1Click:Connect(function()
-    for _, v in pairs(game:GetService("Workspace"):GetDescendants()) do
-        if v:IsA("MeshPart") then
-            v.TextureID = ""
-        elseif v:IsA("Decal") or v:IsA("Texture") then
-            v:Destroy()
-        end
-    end
-end)
-
-antiContent.CanvasSize = UDim2.new(0, 0, 0, yOffset2 + 20)
-
-local creditsContent = Instance.new("ScrollingFrame")
-creditsContent.Name = "CreditsContent"
-creditsContent.Size = UDim2.new(1, -10, 1, -10)
-creditsContent.Position = UDim2.new(0, 5, 0, 5)
-creditsContent.BackgroundTransparency = 1
-creditsContent.CanvasSize = UDim2.new(0, 0, 0, 250)
-creditsContent.ScrollBarThickness = 6
-creditsContent.Parent = contentFrame
-creditsContent.Visible = false
-
-local yOffset3 = 5
-
-local creditTitle = Instance.new("TextLabel")
-creditTitle.Size = UDim2.new(1, -10, 0, 40)
-creditTitle.Position = UDim2.new(0, 5, 0, yOffset3)
-creditTitle.Text = "📜 Information"
-creditTitle.TextColor3 = Color3.fromRGB(255, 200, 100)
-creditTitle.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-creditTitle.TextSize = 16
-creditTitle.Font = Enum.Font.GothamBold
-creditTitle.Parent = creditsContent
-
-local creditCorner = Instance.new("UICorner")
-creditCorner.CornerRadius = UDim.new(0, 4)
-creditCorner.Parent = creditTitle
-yOffset3 = yOffset3 + 50
-
-local scriptLabel = Instance.new("TextLabel")
-scriptLabel.Size = UDim2.new(1, -10, 0, 35)
-scriptLabel.Position = UDim2.new(0, 5, 0, yOffset3)
-scriptLabel.Text = "Script: DEMOz HUB"
-scriptLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-scriptLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-scriptLabel.TextSize = 14
-scriptLabel.Parent = creditsContent
-
-local scriptCorner = Instance.new("UICorner")
-scriptCorner.CornerRadius = UDim.new(0, 6)
-scriptCorner.Parent = scriptLabel
-yOffset3 = yOffset3 + 42
+-- =====================================================
+-- [6] التبويب الثالث: سكربت المطور ترفكسا
+-- =====================================================
+local tab3 = tabContents[2]
 
 local devLabel = Instance.new("TextLabel")
-devLabel.Size = UDim2.new(1, -10, 0, 35)
-devLabel.Position = UDim2.new(0, 5, 0, yOffset3)
-devLabel.Text = "Developer: 7zn"
-devLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-devLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-devLabel.TextSize = 14
-devLabel.Parent = creditsContent
+devLabel.Size = UDim2.new(0, 380, 0, 30)
+devLabel.Position = UDim2.new(0, 10, 0, 10)
+devLabel.BackgroundTransparency = 1
+devLabel.Text = "👨‍💻 سكربت المطور ترفكسا"
+devLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+devLabel.TextSize = 18
+devLabel.Font = Enum.Font.GothamBold
+devLabel.TextXAlignment = Enum.TextXAlignment.Center
+devLabel.Parent = tab3
 
-local devCorner = Instance.new("UICorner")
-devCorner.CornerRadius = UDim.new(0, 6)
-devCorner.Parent = devLabel
-yOffset3 = yOffset3 + 42
+-- زر تشغيل سكربت المطور
+local devBtn = Instance.new("TextButton")
+devBtn.Size = UDim2.new(0, 350, 0, 60)
+devBtn.Position = UDim2.new(0, 25, 0, 60)
+devBtn.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
+devBtn.BorderSizePixel = 2
+devBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+devBtn.Text = "🚀 تحميل وتشغيل سكربت المطور"
+devBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+devBtn.TextSize = 16
+devBtn.Font = Enum.Font.GothamBold
+devBtn.Parent = tab3
 
-local tiktokBtn = Instance.new("TextButton")
-tiktokBtn.Size = UDim2.new(1, -10, 0, 40)
-tiktokBtn.Position = UDim2.new(0, 5, 0, yOffset3)
-tiktokBtn.Text = "TikTok: 9z_e.1 (Click to Copy)"
-tiktokBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-tiktokBtn.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
-tiktokBtn.BorderSizePixel = 0
-tiktokBtn.Parent = creditsContent
+-- الـ loadstring المطلوب
+local devScript = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/omaralshannag980-cell/9z_e.1-/refs/heads/main/main.lua"))()]]
 
-local tiktokCorner = Instance.new("UICorner")
-tiktokCorner.CornerRadius = UDim.new(0, 6)
-tiktokCorner.Parent = tiktokBtn
+-- عرض الـ loadstring داخل مربع نصي (للنسخ)
+local codeBox = Instance.new("TextBox")
+codeBox.Size = UDim2.new(0, 350, 0, 40)
+codeBox.Position = UDim2.new(0, 25, 0, 140)
+codeBox.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+codeBox.BorderSizePixel = 1
+codeBox.BorderColor3 = Color3.fromRGB(255, 255, 255)
+codeBox.Text = devScript
+codeBox.TextColor3 = Color3.fromRGB(100, 255, 100)
+codeBox.TextSize = 12
+codeBox.Font = Enum.Font.Code
+codeBox.TextXAlignment = Enum.TextXAlignment.Left
+codeBox.ClearTextOnFocus = false
+codeBox.Parent = tab3
 
-tiktokBtn.MouseButton1Click:Connect(function()
-    setclipboard("9z_e.1")
+-- زر النسخ
+local copyBtn = Instance.new("TextButton")
+copyBtn.Size = UDim2.new(0, 100, 0, 30)
+copyBtn.Position = UDim2.new(0, 25, 0, 190)
+copyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+copyBtn.BorderSizePixel = 1
+copyBtn.BorderColor3 = Color3.fromRGB(200, 200, 200)
+copyBtn.Text = "📋 نسخ"
+copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+copyBtn.TextSize = 14
+copyBtn.Font = Enum.Font.GothamBold
+copyBtn.Parent = tab3
+
+copyBtn.MouseButton1Click:Connect(function()
+    local clip = setclipboard or toClipboard or function() end
+    local success = pcall(function()
+        clip(devScript)
+    end)
+    if success then
+        copyBtn.Text = "✅ تم النسخ!"
+        task.wait(1.5)
+        copyBtn.Text = "📋 نسخ"
+    else
+        copyBtn.Text = "❌ فشل!"
+        task.wait(1.5)
+        copyBtn.Text = "📋 نسخ"
+    end
 end)
 
-creditsContent.CanvasSize = UDim2.new(0, 0, 0, yOffset3 + 60)
+-- زر التشغيل المباشر
+devBtn.MouseButton1Click:Connect(function()
+    local success, err = pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/omaralshannag980-cell/9z_e.1-/refs/heads/main/main.lua"))()
+    end)
+    if success then
+        devBtn.Text = "✅ تم التشغيل!"
+        devBtn.BackgroundColor3 = Color3.fromRGB(30, 150, 30)
+        task.wait(2)
+        devBtn.Text = "🚀 تحميل وتشغيل سكربت المطور"
+        devBtn.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
+    else
+        devBtn.Text = "❌ خطأ في التحميل!"
+        task.wait(2)
+        devBtn.Text = "🚀 تحميل وتشغيل سكربت المطور"
+    end
+end)
 
-switchToTab("Songs & IDs")
+-- =====================================================
+-- [7] إيقاف آمن عند الإغلاق
+-- =====================================================
+gui.AncestryChanged:Connect(function()
+    if not gui.Parent then
+        print("✅ تم إغلاق مينيو ترفكسا.")
+    end
+end)
+
+print("🔥 تم تحميل مينيو ترفكسا بنجاح!")
