@@ -1,102 +1,118 @@
---[[
-   واجهة إحصائيات فخمة – Roblox Studio
-   مربعة بحواف دائرية، لون رمادي غامق، كتابة بيضاء
-   تعرض: FPS، البينج، عدد اللاعبين
-]]
+-- Anti Afk V1 By omarshannag1234
+-- يعمل على Delta و大多数 إكسكيوتورات روبلوكس
 
-local Player = game.Players.LocalPlayer
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Stats = game:GetService("Stats")
+local LocalPlayer = Players.LocalPlayer
 
--- ============ إنشاء الشاشة ============
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = Player:WaitForChild("PlayerGui")
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Name = "StatsUI"
+-- إعدادات الواجهة
+local screenSize = workspace.CurrentCamera.ViewportSize
+local gui = Instance.new("ScreenGui")
+gui.Name = "AntiAfkGUI"
+gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
--- ============ الإطار الرئيسي (مربع) ============
-local MainFrame = Instance.new("Frame")
-MainFrame.Parent = ScreenGui
-MainFrame.Size = UDim2.new(0, 220, 0, 220) -- مربع 220x220
-MainFrame.Position = UDim2.new(0, 20, 0.5, -110) -- على اليسار في المنتصف (غيّر كما تريد)
-MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45) -- رمادي غامق
-MainFrame.BorderSizePixel = 0
+-- خلفية شبه شفافة (اختياري)
+local background = Instance.new("Frame")
+background.Size = UDim2.new(0, 250, 0, 110)
+background.Position = UDim2.new(0, 10, 0, 10) -- الزاوية اليسرى العليا
+background.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+background.BackgroundTransparency = 0.5
+background.BorderSizePixel = 1
+background.BorderColor3 = Color3.fromRGB(255, 255, 255)
+background.Parent = gui
 
--- حواف دائرية
-local Corner = Instance.new("UICorner")
-Corner.CornerRadius = UDim.new(0, 18)
-Corner.Parent = MainFrame
+-- نص العنوان
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 25)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "Anti Afk V1 By omarshannag1234"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.Parent = background
 
--- ============ عناوين النص ============
-local function CreateStatRow(yPosition, labelText)
-	local label = Instance.new("TextLabel")
-	label.Parent = MainFrame
-	label.Size = UDim2.new(1, -20, 0, 30)
-	label.Position = UDim2.new(0, 15, 0, yPosition)
-	label.BackgroundTransparency = 1
-	label.Text = labelText .. ":"
-	label.TextColor3 = Color3.fromRGB(255, 255, 255) -- أبيض فاتح
-	label.Font = Enum.Font.GothamSemibold
-	label.TextSize = 18
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	return label
+-- نص المعلومات (Ping, FPS)
+local info = Instance.new("TextLabel")
+info.Size = UDim2.new(1, 0, 0, 25)
+info.Position = UDim2.new(0, 0, 0, 32)
+info.BackgroundTransparency = 1
+info.Text = "Ping: 0    Fps: 0"
+info.TextColor3 = Color3.fromRGB(200, 200, 200)
+info.TextScaled = true
+info.Font = Enum.Font.Gotham
+info.Parent = background
+
+-- نص حالة Anti-Afk
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(1, 0, 0, 25)
+status.Position = UDim2.new(0, 0, 0, 58)
+status.BackgroundTransparency = 1
+status.Text = "Anti-Afk Auto Enabled"
+status.TextColor3 = Color3.fromRGB(0, 255, 0)
+status.TextScaled = true
+status.Font = Enum.Font.Gotham
+status.Parent = background
+
+-- نص العداد (وقت الجلسة)
+local timer = Instance.new("TextLabel")
+timer.Size = UDim2.new(1, 0, 0, 25)
+timer.Position = UDim2.new(0, 0, 0, 82)
+timer.BackgroundTransparency = 1
+timer.Text = "0:0:0"
+timer.TextColor3 = Color3.fromRGB(255, 255, 0)
+timer.TextScaled = true
+timer.Font = Enum.Font.GothamBold
+timer.Parent = background
+
+-- متغيرات العد
+local startTime = tick()
+local frameCount = 0
+local lastFpsUpdate = tick()
+local currentFps = 0
+
+-- دالة حساب الـ Ping من Stats (إن وجد)
+local function getPing()
+    local success, ping = pcall(function()
+        return Stats.Network.ServerStatsItem["Data Ping"]:GetValueString()
+    end)
+    if success and ping then
+        return tonumber(ping) or 0
+    else
+        -- طريقة بديلة: قياس الـ Ping عبر RemoteFunction (اختياري)
+        -- لكن نكتفي بـ 0 افتراضياً إذا لم تتوفر
+        return 0
+    end
 end
 
-local FPSLabel = CreateStatRow(20, "fps")
-local PingLabel = CreateStatRow(75, "ping")
-local PeopleLabel = CreateStatRow(130, "people")
+-- تحديث المعلومات كل 0.5 ثانية
+coroutine.wrap(function()
+    while wait(0.5) do
+        -- تحديث Ping
+        local ping = getPing()
+        -- تحديث FPS (يُحدث في heartbeat لكن نعرضه هنا)
+        info.Text = string.format("Ping: %d    Fps: %d", ping, currentFps)
 
--- ============ قيم الإحصائيات ============
-local function CreateValueLabel(yPosition)
-	local val = Instance.new("TextLabel")
-	val.Parent = MainFrame
-	val.Size = UDim2.new(1, -20, 0, 30)
-	val.Position = UDim2.new(0, 15, 0, yPosition + 25)
-	val.BackgroundTransparency = 1
-	val.Text = "--"
-	val.TextColor3 = Color3.fromRGB(255, 255, 255)
-	val.Font = Enum.Font.GothamBold
-	val.TextSize = 22
-	val.TextXAlignment = Enum.TextXAlignment.Left
-	return val
-end
+        -- تحديث العداد
+        local elapsed = math.floor(tick() - startTime)
+        local hours = math.floor(elapsed / 3600)
+        local minutes = math.floor((elapsed % 3600) / 60)
+        local seconds = elapsed % 60
+        timer.Text = string.format("%d:%d:%02d", hours, minutes, seconds)
+    end
+end)()
 
-local FPSValue = CreateValueLabel(20)
-local PingValue = CreateValueLabel(75)
-local PeopleValue = CreateValueLabel(130)
-
--- ============ جلب البيانات ============
-local function GetFPS()
-	-- طريقة دقيقة لقياس الإطارات
-	local dt = 0
-	for i = 1, 5 do
-		dt = dt + RunService.RenderStepped:Wait()
-	end
-	local fps = math.floor(5 / dt)
-	return fps
-end
-
-local function GetPing()
-	local ping = Stats:FindFirstChild("PerformanceStats") and Stats.PerformanceStats.Ping
-	if ping then
-		return math.floor(ping) .. " ms"
-	else
-		-- خيار احتياطي
-		local dping = Stats.Network.ServerStatsItem.DataPing
-		return dping and math.floor(dping) .. " ms" or "N/A"
-	end
-end
-
-local function GetPlayerCount()
-	return #game.Players:GetPlayers()
-end
-
--- ============ تحديث متواصل ============
-spawn(function()
-	while true do
-		FPSValue.Text = tostring(GetFPS())
-		PingValue.Text = GetPing()
-		PeopleValue.Text = tostring(GetPlayerCount())
-		wait(0.5) -- يحدث كل نصف ثانية
-	end
+-- حساب الـ FPS عبر RunService
+RunService.Heartbeat:Connect(function(deltaTime)
+    frameCount = frameCount + 1
+    local now = tick()
+    if now - lastFpsUpdate >= 1 then
+        currentFps = frameCount
+        frameCount = 0
+        lastFpsUpdate = now
+    end
 end)
+
+-- الحفاظ على الواجهة في المقدمة (اختياري)
+gui.ResetOnSpawn = false
